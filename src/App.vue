@@ -34,19 +34,19 @@
     </v-app-bar>
 
     <v-main>
-      <HelloWorld />
+      <PttId />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+import PttId from "./components/PttId";
 
 export default {
   name: "App",
 
   components: {
-    HelloWorld,
+    PttId,
   },
 
   data: () => ({

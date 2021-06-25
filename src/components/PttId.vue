@@ -60,7 +60,7 @@
             :headers="headers"
             :items="items"
             sort-by="ord"
-            class="elevation-8"
+            class="elevation-8 my-3"
             mobile-breakpoint="0"
           >
             <template v-slot:item.ctx="{ item }">
@@ -82,6 +82,31 @@
               {{ date(item.date) }}
             </template>
           </v-data-table>
+        </v-row>
+
+        <v-row justify="center">
+          <v-btn
+            :href="'https://www.pttbrain.com/ptt/user/' + id"
+            v-if="id && !error"
+            class="mx-5"
+            lass="subheading mx-3"
+            target="_blank"
+            color="info"
+            light
+          >
+            PTT Brain
+          </v-btn>
+          <v-btn
+            :href="'https://www.plytic.com/authors/' + id"
+            v-if="id && !error"
+            class="mx-5"
+            lass="subheading mx-3"
+            target="_blank"
+            color="warning"
+            light
+          >
+            Plytic
+          </v-btn>
         </v-row>
       </v-col>
     </v-row>

@@ -15,7 +15,7 @@
 
         <p class="subheading font-weight-regular">
           輸入 ptt 上的 id, 即列出其最近上站的 10 個 IP
-          地址、時間、國家與是否為跳板。
+          地址、日期、國家與是否為跳板。
         </p>
       </v-col>
 
@@ -95,7 +95,7 @@ export default {
       { text: "#", value: "ord" },
       { text: "IP", value: "ip" },
       { text: "國家", value: "country" },
-      { text: "時間", value: "date" },
+      { text: "日期", value: "date" },
       { text: "Context", value: "ctx" },
     ],
     error: null,
@@ -119,7 +119,7 @@ export default {
             if (element.country != "TW")
               fetch("spur/" + element.ip)
                 .then((r) => r.text())
-                .then((t) => {
+                .then((t) =>
                   this.spur.push({
                     ord: index,
                     ip: element.ip,
@@ -132,8 +132,8 @@ export default {
                           .map((char) => 127397 + char.charCodeAt())
                       ) + element.country,
                     ctx: parser.parseFromString(t, "text/html").title,
-                  });
-                });
+                  })
+                );
             else
               this.spur.push({
                 ord: index,

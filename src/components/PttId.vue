@@ -133,9 +133,9 @@ export default {
 
   watch: {
     id: function (id) {
+      this.items = [];
       if (!id) {
         this.error = null;
-        this.items = [];
         return;
       }
       const parser = new window.DOMParser();

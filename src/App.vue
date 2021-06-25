@@ -16,7 +16,12 @@
         class="primary lighten-2 py-1 text-center white--text"
       >
         <v-card-text>
-          <v-btn href="" class="mx-4" icon>
+          <v-btn
+            href="https://github.com/nevikw39/ptt-id"
+            target="_blank"
+            class="mx-4"
+            icon
+          >
             <v-icon size="32px"> mdi-github </v-icon>
           </v-btn>
         </v-card-text>

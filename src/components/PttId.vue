@@ -94,11 +94,7 @@ export default {
   watch: {
     id: function (id) {
       const parser = new window.DOMParser();
-      fetch(
-        "https://thingproxy.freeboard.io/fetch/https://www.plytic.com/api/v1/authors/" +
-          id.toLowerCase() +
-          "/source_ips"
-      )
+      fetch("plytic/" + id.toLowerCase() + "/source_ips")
         .then((r) => r.json())
         .then((j) => {
           this.plytic = j.recent_source_ips;
@@ -106,10 +102,7 @@ export default {
             .forEach((element) => {
               element.context = "--";
               if (element.country != "TW")
-                fetch(
-                  "https://thingproxy.freeboard.io/fetch/https://spur.us/context/" +
-                    element.ip
-                )
+                fetch("spur/" + element.ip)
                   .then((r) => r.text())
                   .then((t) => {
                     element.context = parser.parseFromString(

@@ -1,0 +1,11 @@
+[[redirects]]
+  from = "/plytic/*"
+  to = "https://www.plytic.com/api/v1/authors/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/spur/*"
+  to = "https://spur.us/context/:splat"
+  status = 200
+  force = true

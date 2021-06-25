@@ -1,7 +1,20 @@
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/ptt-id/'
-    : '/',
+  devServer: {
+    proxy: {
+      '^/plytic': {
+        target: 'https://www.plytic.com/api/v1/authors/',
+        pathRewrite: { '^/plytic': '' },
+        changeOrigin: true,
+        ws: true
+      },
+      '^/spur': {
+        target: 'https://spur.us/context/',
+        pathRewrite: { '^/spur': '' },
+        changeOrigin: true,
+        ws: true
+      },
+    }
+  },
   transpileDependencies: [
     'vuetify'
   ]

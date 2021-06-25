@@ -8,12 +8,25 @@
       <PttId />
     </v-main>
 
-    <v-footer color="primary lighten-1" padless>
-      <v-row justify="center" no-gutters>
-        <v-col class="primary lighten-2 py-4 text-center white--text" cols="12">
+    <v-footer color="primary lighten-1">
+      <v-card
+        flat
+        tile
+        width="100%"
+        class="primary lighten-2 py-1 text-center white--text"
+      >
+        <v-card-text>
+          <v-btn href="" class="mx-4" icon>
+            <v-icon size="32px"> mdi-github </v-icon>
+          </v-btn>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-title class="white--text justify-center">
           {{ new Date().getFullYear() }} — <strong>nevikw39</strong>
-        </v-col>
-      </v-row>
+        </v-card-title>
+      </v-card>
     </v-footer>
   </v-app>
 </template>

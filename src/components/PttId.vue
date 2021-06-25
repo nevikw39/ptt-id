@@ -26,13 +26,16 @@
           <p class="subheading font-weight-regular">
             一款 userscript, 令您只要雙擊選取 ptt 上 IP 便可即時取得相關資訊。
           </p>
-          <a
+        </v-row>
+        <v-row justify="center">
+          <v-btn
             href="https://gist.github.com/nevikw39/d7a08f637919348106f6a35d35a62d3f"
             lass="subheading mx-3"
             target="_blank"
+            color="success"
           >
             前往了解
-          </a>
+          </v-btn>
         </v-row>
       </v-col>
 

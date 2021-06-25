@@ -30,8 +30,9 @@
             href="https://gist.github.com/nevikw39/d7a08f637919348106f6a35d35a62d3f"
             lass="subheading mx-3"
             target="_blank"
-            >前往了解</a
           >
+            前往了解
+          </a>
         </v-row>
       </v-col>
 
@@ -51,20 +52,26 @@
         <v-alert prominent type="error" v-if="error">{{ error }}</v-alert>
 
         <v-row justify="center">
-          <v-data-table :headers="headers" :items="spur" class="elevation-8">
-            <template slot="item.rank" scope="props">
-              {{ props.index }}
-            </template>
-            <template v-slot:item.context="{ item }">
-              <v-chip
+          <v-data-table
+            :headers="headers"
+            :items="spur"
+            sort-by="ord"
+            class="elevation-8"
+            mobile-breakpoint="0"
+          >
+            <template v-slot:item.ctx="{ item }">
+              <v-btn
+                rounded
                 outlined
-                :color="color(item.context)"
-                v-html="context(item.context, item.ip)"
+                target="_blank"
+                :color="color(item.ctx)"
+                :href="href(item.ctx, item.ip)"
               >
-              </v-chip>
+                {{ context(item.ctx) }}
+              </v-btn>
             </template>
-            <template v-slot:item.last_seen_at="{ item }">
-              {{ date(item.last_seen_at) }}
+            <template v-slot:item.date="{ item }">
+              {{ date(item.date) }}
             </template>
           </v-data-table>
         </v-row>
@@ -82,17 +89,22 @@ export default {
     plytic: [],
     spur: [],
     headers: [
-      { text: "#", value: "rank" },
+      { text: "#", value: "ord" },
       { text: "IP", value: "ip" },
       { text: "國家", value: "country" },
-      { text: "時間", value: "last_seen_at" },
-      { text: "Context", value: "context" },
+      { text: "時間", value: "date" },
+      { text: "Context", value: "ctx" },
     ],
     error: null,
   }),
 
   watch: {
     id: function (id) {
+      if (!id) {
+        this.error = null;
+        this.spur = [];
+        return;
+      }
       const parser = new window.DOMParser();
       fetch("plytic/" + id.toLowerCase() + "/source_ips")
         .then((r) => r.json())
@@ -100,26 +112,39 @@ export default {
           this.error = null;
           if (!j || !j.recent_source_ips) throw new Error("User not found!!");
           this.plytic = j.recent_source_ips;
-          this.plytic.forEach((element) => {
-            element.context = "--";
+          this.plytic.forEach((element, index) => {
             if (element.country != "TW")
               fetch("spur/" + element.ip)
                 .then((r) => r.text())
                 .then((t) => {
-                  element.context = parser.parseFromString(
-                    t,
-                    "text/html"
-                  ).title;
-                  this.spur = this.plytic;
+                  this.spur.push({
+                    ord: index,
+                    ip: element.ip,
+                    date: new Date(element.last_seen_at),
+                    country:
+                      String.fromCodePoint(
+                        ...element.country
+                          .toUpperCase()
+                          .split("")
+                          .map((char) => 127397 + char.charCodeAt())
+                      ) + element.country,
+                    ctx: parser.parseFromString(t, "text/html").title,
+                  });
                 });
-            element.country =
-              String.fromCodePoint(
-                ...element.country
-                  .toUpperCase()
-                  .split("")
-                  .map((char) => 127397 + char.charCodeAt())
-              ) + element.country;
-            element.last_seen_at = new Date(element.last_seen_at);
+            else
+              this.spur.push({
+                ord: index,
+                ip: element.ip,
+                date: new Date(element.last_seen_at),
+                country:
+                  String.fromCodePoint(
+                    ...element.country
+                      .toUpperCase()
+                      .split("")
+                      .map((char) => 127397 + char.charCodeAt())
+                  ) + element.country,
+                ctx: "--",
+              });
           });
         })
         .catch((e) => {
@@ -136,21 +161,18 @@ export default {
   methods: {
     color: function (x) {
       return x.includes("esidential") || x.includes("ikely")
-        ? "danger"
+        ? "warning"
         : x.includes("VPN") || x.includes("roxy")
         ? "error"
         : "info";
     },
-    context: function (x, y) {
-      if (/\(.*\)/.test(x))
-        return (
-          '<a target="_blank" href="https://spur.us/context/' +
-          y +
-          '">' +
-          x.match(/\(.*\)/)[0].slice(2, -2) +
-          "</a>"
-        );
+    context: function (x) {
+      if (/\(.*\)/.test(x)) return x.match(/\(.*\)/)[0].slice(2, -2);
       else return "--";
+    },
+    href: function (x, y) {
+      if (/\(.*\)/.test(x)) return "https://spur.us/context/" + y;
+      else return undefined;
     },
     date: function (x) {
       return new Intl.DateTimeFormat("zh-TW", {

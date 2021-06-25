@@ -40,7 +40,7 @@
 
         <v-row justify="center">
           <v-col cols="12" sm="6" md="3">
-            <input placeholder="ID" v-model.lazy="id" />
+            <v-text-field label="ID" v-model.lazy="id"></v-text-field>
           </v-col>
         </v-row>
       </v-col>
@@ -48,7 +48,7 @@
       <v-col class="mb-5" cols="12">
         <h2 class="headline font-weight-bold mb-3">輸出</h2>
 
-        <v-alert prominent type="error" v-if="error">{{ rrore }}</v-alert>
+        <v-alert prominent type="error" v-if="error">{{ error }}</v-alert>
 
         <v-row justify="center">
           <v-data-table :headers="headers" :items="spur" class="elevation-8">
@@ -57,8 +57,8 @@
             </template>
             <template v-slot:item.context="{ item }">
               <v-chip
+                outlined
                 :color="color(item.context)"
-                light
                 v-html="context(item.context, item.ip)"
               >
               </v-chip>
@@ -97,30 +97,34 @@ export default {
       fetch("plytic/" + id.toLowerCase() + "/source_ips")
         .then((r) => r.json())
         .then((j) => {
+          this.error = null;
+          if (!j || !j.recent_source_ips) throw new Error("User not found!!");
           this.plytic = j.recent_source_ips;
-          this.plytic
-            .forEach((element) => {
-              element.context = "--";
-              if (element.country != "TW")
-                fetch("spur/" + element.ip)
-                  .then((r) => r.text())
-                  .then((t) => {
-                    element.context = parser.parseFromString(
-                      t,
-                      "text/html"
-                    ).title;
-                    this.spur = this.plytic;
-                  });
-              element.country =
-                String.fromCodePoint(
-                  ...element.country
-                    .toUpperCase()
-                    .split("")
-                    .map((char) => 127397 + char.charCodeAt())
-                ) + element.country;
-              element.last_seen_at = new Date(element.last_seen_at);
-            })
-            .catch((e) => (this.error = e));
+          this.plytic.forEach((element) => {
+            element.context = "--";
+            if (element.country != "TW")
+              fetch("spur/" + element.ip)
+                .then((r) => r.text())
+                .then((t) => {
+                  element.context = parser.parseFromString(
+                    t,
+                    "text/html"
+                  ).title;
+                  this.spur = this.plytic;
+                });
+            element.country =
+              String.fromCodePoint(
+                ...element.country
+                  .toUpperCase()
+                  .split("")
+                  .map((char) => 127397 + char.charCodeAt())
+              ) + element.country;
+            element.last_seen_at = new Date(element.last_seen_at);
+          });
+        })
+        .catch((e) => {
+          this.spur = [];
+          this.error = e;
         });
     },
   },

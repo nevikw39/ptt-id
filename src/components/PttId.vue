@@ -56,8 +56,9 @@
 
         <v-row justify="center">
           <v-data-table
+            :loading="loading"
             :headers="headers"
-            :items="spur"
+            :items="items"
             sort-by="ord"
             class="elevation-8"
             mobile-breakpoint="0"
@@ -68,9 +69,13 @@
                 outlined
                 target="_blank"
                 :color="color(item.ctx)"
-                :href="href(item.ctx, item.ip)"
+                :href="
+                  item.ctx != '--'
+                    ? 'https://spur.us/context/' + item.ip
+                    : undefined
+                "
               >
-                {{ context(item.ctx) }}
+                {{ item.ctx }}
               </v-btn>
             </template>
             <template v-slot:item.date="{ item }">
@@ -89,8 +94,7 @@ export default {
 
   data: () => ({
     id: "",
-    plytic: [],
-    spur: [],
+    items: [],
     headers: [
       { text: "#", value: "ord" },
       { text: "IP", value: "ip" },
@@ -99,61 +103,45 @@ export default {
       { text: "Context", value: "ctx" },
     ],
     error: null,
+    loading: false,
   }),
 
   watch: {
     id: function (id) {
       if (!id) {
         this.error = null;
-        this.spur = [];
+        this.items = [];
         return;
       }
       const parser = new window.DOMParser();
+      let queue = [];
+      this.loading = true;
       fetch("plytic/" + id.toLowerCase() + "/source_ips")
         .then((r) => r.json())
         .then((j) => {
           this.error = null;
           if (!j || !j.recent_source_ips) throw new Error("User not found!!");
-          this.plytic = j.recent_source_ips;
-          this.plytic.forEach((element, index) => {
+          j.recent_source_ips.forEach((element, index) => {
             if (element.country != "TW")
-              fetch("spur/" + element.ip)
-                .then((r) => r.text())
-                .then((t) =>
-                  this.spur.push({
-                    ord: index,
-                    ip: element.ip,
-                    date: new Date(element.last_seen_at),
-                    country:
-                      String.fromCodePoint(
-                        ...element.country
-                          .toUpperCase()
-                          .split("")
-                          .map((char) => 127397 + char.charCodeAt())
-                      ) + element.country,
-                    ctx: parser.parseFromString(t, "text/html").title,
-                  })
-                );
-            else
-              this.spur.push({
-                ord: index,
-                ip: element.ip,
-                date: new Date(element.last_seen_at),
-                country:
-                  String.fromCodePoint(
-                    ...element.country
-                      .toUpperCase()
-                      .split("")
-                      .map((char) => 127397 + char.charCodeAt())
-                  ) + element.country,
-                ctx: "--",
-              });
+              queue.push(
+                fetch("spur/" + element.ip)
+                  .then((r) => r.text())
+                  .then((t) =>
+                    this.push(
+                      element,
+                      index,
+                      this.context(parser.parseFromString(t, "text/html").title)
+                    )
+                  )
+              );
+            else this.push(element, index, "--");
           });
         })
         .catch((e) => {
-          this.spur = [];
+          this.items = [];
           this.error = e;
         });
+      Promise.all(queue).then(() => (this.loading = false));
     },
   },
 
@@ -163,19 +151,15 @@ export default {
 
   methods: {
     color: function (x) {
-      return x.includes("esidential") || x.includes("ikely")
+      return x.includes("Resident") || x.includes("Likely") || x.includes("Tor")
         ? "warning"
-        : x.includes("VPN") || x.includes("roxy")
+        : x.includes("VPN") || x.includes("Proxy")
         ? "error"
         : "info";
     },
     context: function (x) {
       if (/\(.*\)/.test(x)) return x.match(/\(.*\)/)[0].slice(2, -2);
       else return "--";
-    },
-    href: function (x, y) {
-      if (/\(.*\)/.test(x)) return "https://spur.us/context/" + y;
-      else return undefined;
     },
     date: function (x) {
       return new Intl.DateTimeFormat("zh-TW", {
@@ -185,6 +169,21 @@ export default {
         hour12: false,
         timeZone: "Asia/Taipei",
       }).format(x);
+    },
+    push: function (element, index, ctx) {
+      this.items.push({
+        ord: index,
+        ip: element.ip,
+        date: new Date(element.last_seen_at),
+        country:
+          String.fromCodePoint(
+            ...element.country
+              .toUpperCase()
+              .split("")
+              .map((char) => 127397 + char.charCodeAt())
+          ) + element.country,
+        ctx: ctx,
+      });
     },
   },
 };

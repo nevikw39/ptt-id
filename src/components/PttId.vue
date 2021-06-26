@@ -46,8 +46,10 @@
           <v-col cols="12" sm="6" md="3">
             <v-text-field
               label="ID"
+              hint="輸入完畢請按 Enter 或點擊外部"
               :value="id"
               @change="(x) => (id = x)"
+              @focus="loading = true"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -132,24 +134,25 @@ export default {
       { text: "Context", value: "ctx" },
     ],
     error: null,
-    loading: false,
+    loading: true,
   }),
 
   watch: {
     id: function (id) {
       this.items = [];
+      this.loading = true;
       if (!id) {
         this.error = null;
         return;
       }
+      document.activeElement.blur();
       const parser = new window.DOMParser();
-      let queue = [];
-      this.loading = true;
       fetch("plytic/" + id.toLowerCase() + "/source_ips")
         .then((r) => r.json())
         .then((j) => {
           this.error = null;
           if (!j || !j.recent_source_ips) throw new Error("User not found!!");
+          let queue = [];
           j.recent_source_ips.forEach((element, index) => {
             if (element.country != "TW")
               queue.push(
@@ -165,12 +168,13 @@ export default {
               );
             else this.push(element, index, "--");
           });
+          Promise.all(queue).then(() => (this.loading = false));
         })
         .catch((e) => {
           this.items = [];
           this.error = e;
+          this.loading = false;
         });
-      Promise.all(queue).then(() => (this.loading = false));
     },
   },
 

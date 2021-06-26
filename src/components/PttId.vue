@@ -206,7 +206,7 @@ export default {
               .toUpperCase()
               .split("")
               .map((char) => 127397 + char.charCodeAt())
-          ) + element.country,
+          ) + new Intl.DisplayNames(['zh-TW'], {type: 'region'}).of(element.country),
         ctx: ctx,
       });
     },

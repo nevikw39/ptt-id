@@ -49,7 +49,7 @@
               hint="輸入完畢請按 Enter 或點擊外部"
               :value="id"
               @change="(x) => (id = x)"
-              @focus="loading = true"
+              @focus="() => (loading = true)"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -64,10 +64,12 @@
           <v-data-table
             :loading="loading"
             :headers="headers"
+            :caption="caption"
             :items="items"
             sort-by="ord"
             class="elevation-8 my-3"
             mobile-breakpoint="0"
+            id="capture"
           >
             <template v-slot:item.ctx="{ item }">
               <v-btn
@@ -90,21 +92,18 @@
           </v-data-table>
         </v-row>
 
-        <v-row justify="center">
+        <v-row justify="center" v-if="id && !error">
           <v-btn
             :href="'https://www.pttbrain.com/ptt/user/' + id"
-            v-if="id && !error"
             class="mx-5"
             lass="subheading mx-3"
             target="_blank"
             color="info"
-            light
           >
             PTT Brain
           </v-btn>
           <v-btn
             :href="'https://www.plytic.com/authors/' + id"
-            v-if="id && !error"
             class="mx-5"
             lass="subheading mx-3"
             target="_blank"
@@ -113,6 +112,30 @@
           >
             Plytic
           </v-btn>
+          <v-btn
+            class="mx-5"
+            lass="subheading mx-3"
+            target="_blank"
+            color="warning"
+            @click="capture"
+          >
+            Capture
+          </v-btn>
+          <v-dialog v-model="dialog" max-width="540">
+            <v-card>
+              <v-img :src="src" max-width="540" contain></v-img>
+              <v-card-actions class="justify-center">
+                <v-btn
+                  :href="src"
+                  target="_blank"
+                  color="success"
+                  download="ptt-id.png"
+                >
+                  Download
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-row>
       </v-col>
     </v-row>
@@ -120,6 +143,8 @@
 </template>
 
 <script>
+import html2canvas from "html2canvas";
+
 export default {
   name: "PttId",
 
@@ -135,12 +160,13 @@ export default {
     ],
     error: null,
     loading: true,
+    dialog: false,
+    src: null,
   }),
 
   watch: {
     id: function (id) {
       this.items = [];
-      this.loading = true;
       if (!id) {
         this.error = null;
         return;
@@ -179,7 +205,11 @@ export default {
   },
 
   computed: {
-    //
+    caption: function () {
+      return this.id && !this.error
+        ? `${this.id} 在 ptt 上的 IP 資訊 - «ptt.nevikw39.cf»`
+        : null;
+    },
   },
 
   methods: {
@@ -219,6 +249,17 @@ export default {
             element.country
           ),
         ctx: ctx,
+      });
+    },
+    capture: function () {
+      let that = this;
+      html2canvas(document.getElementById("capture"), {
+        backgroundColor: null,
+        scrollX: -window.screenX,
+        scrollY: -window.scrollY,
+      }).then(function (canvas) {
+        that.src = canvas.toDataURL();
+        that.dialog = true;
       });
     },
   },

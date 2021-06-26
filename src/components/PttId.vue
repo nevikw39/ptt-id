@@ -44,7 +44,11 @@
 
         <v-row justify="center">
           <v-col cols="12" sm="6" md="3">
-            <v-text-field label="ID" v-model.lazy="id"></v-text-field>
+            <v-text-field
+              label="ID"
+              :value="id"
+              @change="(x) => (id = x)"
+            ></v-text-field>
           </v-col>
         </v-row>
       </v-col>
@@ -206,7 +210,10 @@ export default {
               .toUpperCase()
               .split("")
               .map((char) => 127397 + char.charCodeAt())
-          ) + new Intl.DisplayNames(['zh-TW'], {type: 'region'}).of(element.country),
+          ) +
+          new Intl.DisplayNames(["zh-TW"], { type: "region" }).of(
+            element.country
+          ),
         ctx: ctx,
       });
     },

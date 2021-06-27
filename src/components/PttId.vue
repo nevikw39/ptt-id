@@ -134,6 +134,36 @@
           </v-dialog>
         </v-row>
       </v-col>
+
+      <v-col class="mb-5" cols="12">
+        <h2 class="headline font-weight-bold mb-3">說明</h2>
+
+        <v-row justify="center">
+          <ol class="text-left">
+            <li class="error--text">
+              <strong>XXX VPN</strong>: 很高機率是 VPN
+            </li>
+            <li class="error--text">
+              <strong>Open Proxy</strong>: 很高機率是開放式 Proxy
+            </li>
+            <li class="error--text">
+              <strong>Tor Exit Node</strong>: 很高機率是暗網
+            </li>
+            <li class="warning--text">
+              <strong>Likely VPN/Proxy</strong>: 有可能是 VPN 或 Proxy
+            </li>
+            <li class="warning--text">
+              <strong>Residential/Call-back Proxy</strong>:
+              如上述，這個感覺怪怪的，有可能是誤判，應進一步判斷是否在國外、是否為
+              Data Center 等
+            </li>
+            <li class="info--text">
+              <strong>Not Anonymous</strong>: 通常是正常使用者，但如果屬於 Data
+              Center 亦有可能是私人跳板
+            </li>
+          </ol>
+        </v-row>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -221,7 +251,7 @@ export default {
       else return "--";
     },
     date: function (x) {
-      return x.getMonth() + '/' + x.getDate() + ", " + x.getFullYear();
+      return x.getMonth() + "/" + x.getDate() + ", " + x.getFullYear();
     },
     push: function (element, index, ctx) {
       this.items.push({

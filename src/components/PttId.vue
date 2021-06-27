@@ -58,6 +58,10 @@
       <v-col class="mb-5" cols="12">
         <h2 class="headline font-weight-bold mb-3">輸出</h2>
 
+        <v-alert prominent type="warning" v-if="!Intl.DisplayNames">
+          您的瀏覽器並不支援 <code>Intl.DisplayNames</code>,
+          因此恕無法將國家帶碼轉換為名稱。建議您可以更新至最新版本，以獲得更加體驗。
+        </v-alert>
         <v-alert prominent type="error" v-if="error">{{ error }}</v-alert>
 
         <v-row justify="center">
@@ -125,10 +129,7 @@
             <v-card>
               <img :src="src" width="100%" />
               <v-card-actions class="justify-center">
-                <v-btn
-                  color="success"
-                  @click="() => dialog = false"
-                >
+                <v-btn color="success" @click="() => (dialog = false)">
                   Close
                 </v-btn>
               </v-card-actions>
@@ -242,10 +243,11 @@ export default {
               .toUpperCase()
               .split("")
               .map((char) => 127397 + char.charCodeAt())
-          ) +
-          new Intl.DisplayNames(["zh-TW"], { type: "region" }).of(
-            element.country
-          ),
+          ) + Intl.DisplayNames
+            ? new Intl.DisplayNames(["zh-TW"], { type: "region" }).of(
+                element.country
+              )
+            : element.country,
         ctx: ctx,
       });
     },

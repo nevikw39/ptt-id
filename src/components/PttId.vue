@@ -123,15 +123,13 @@
           </v-btn>
           <v-dialog v-model="dialog" max-width="540">
             <v-card>
-              <v-img :src="src" max-width="540" contain></v-img>
+              <img :src="src" width="100%" />
               <v-card-actions class="justify-center">
                 <v-btn
-                  :href="src"
-                  target="_blank"
                   color="success"
-                  download="ptt-id.png"
+                  @click="() => dialog = false"
                 >
-                  Download
+                  Close
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -207,7 +205,7 @@ export default {
   computed: {
     caption: function () {
       return this.id && !this.error
-        ? `${this.id} 在 ptt 上的 IP 資訊 - «ptt.nevikw39.cf»`
+        ? `${this.id} 在 ptt 上的 IP 資訊 @ «ptt.nevikw39.cf»`
         : null;
     },
   },

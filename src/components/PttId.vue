@@ -58,7 +58,7 @@
       <v-col class="mb-5" cols="12">
         <h2 class="headline font-weight-bold mb-3">輸出</h2>
 
-        <v-alert prominent type="warning" v-if="!Intl.DisplayNames">
+        <v-alert type="warning" v-if="!Intl.DisplayNames" class="grey--text">
           您的瀏覽器並不支援 <code>Intl.DisplayNames</code>,
           因此恕無法將國家帶碼轉換為名稱。建議您可以更新至最新版本，以獲得更加體驗。
         </v-alert>
@@ -111,17 +111,17 @@
             class="mx-5"
             lass="subheading mx-3"
             target="_blank"
-            color="warning"
-            light
+            color="success"
           >
             Plytic
           </v-btn>
           <v-btn
-            class="mx-5"
+            class="mx-5 gray--text"
             lass="subheading mx-3"
             target="_blank"
             color="warning"
             @click="capture"
+            outlined
           >
             Capture
           </v-btn>
@@ -129,7 +129,7 @@
             <v-card>
               <img :src="src" width="100%" />
               <v-card-actions class="justify-center">
-                <v-btn color="success" @click="() => (dialog = false)">
+                <v-btn color="error" @click="() => (dialog = false)">
                   Close
                 </v-btn>
               </v-card-actions>
@@ -176,7 +176,7 @@ export default {
         .then((r) => r.json())
         .then((j) => {
           this.error = null;
-          if (!j || !j.recent_source_ips) throw new Error("User not found!!");
+          if (!j || !j.recent_source_ips) throw new Error("找不到使用者！！");
           let queue = [];
           j.recent_source_ips.forEach((element, index) => {
             if (element.country != "TW")
@@ -243,11 +243,12 @@ export default {
               .toUpperCase()
               .split("")
               .map((char) => 127397 + char.charCodeAt())
-          ) + Intl.DisplayNames
+          ) +
+          (Intl.DisplayNames
             ? new Intl.DisplayNames(["zh-TW"], { type: "region" }).of(
                 element.country
               )
-            : element.country,
+            : element.country),
         ctx: ctx,
       });
     },

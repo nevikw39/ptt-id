@@ -221,13 +221,7 @@ export default {
       else return "--";
     },
     date: function (x) {
-      return new Intl.DateTimeFormat("zh-TW", {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour12: false,
-        timeZone: "Asia/Taipei",
-      }).format(x);
+      return x.getMonth() + '/' + x.getDate() + ", " + x.getFullYear();
     },
     push: function (element, index, ctx) {
       this.items.push({

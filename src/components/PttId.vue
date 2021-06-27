@@ -60,7 +60,7 @@
 
         <v-alert type="warning" v-if="!Intl.DisplayNames" class="grey--text">
           您的瀏覽器並不支援 <code>Intl.DisplayNames</code>,
-          因此恕無法將國家帶碼轉換為名稱。建議您可以更新至最新版本，以獲得更加體驗。
+          因此恕無法將國家代碼轉換為名稱。建議您可以更新至最新版本，以獲得更佳體驗。
         </v-alert>
         <v-alert prominent type="error" v-if="error">{{ error }}</v-alert>
 
@@ -99,8 +99,7 @@
         <v-row justify="center" v-if="id && !error">
           <v-btn
             :href="'https://www.pttbrain.com/ptt/user/' + id"
-            class="mx-5"
-            lass="subheading mx-3"
+            class="mx-1"
             target="_blank"
             color="info"
           >
@@ -108,16 +107,14 @@
           </v-btn>
           <v-btn
             :href="'https://www.plytic.com/authors/' + id"
-            class="mx-5"
-            lass="subheading mx-3"
+            class="mx-1"
             target="_blank"
             color="success"
           >
             Plytic
           </v-btn>
           <v-btn
-            class="mx-5 gray--text"
-            lass="subheading mx-3"
+            class="mx-1 gray--text"
             target="_blank"
             color="warning"
             @click="capture"
